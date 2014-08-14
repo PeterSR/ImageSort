@@ -202,6 +202,10 @@ if __name__ == '__main__':
     config = ConfigParser.ConfigParser()
     config.read(configFilename)
     
+    if not config.has_section("main"):
+        print "Config file '" + configFilename + "' does not have a main section"
+        sys.exit()
+
     input_path = config.get("main", "input_path")
     output_path = config.get("main", "output_path")
     ext = config.get("main", "extension")
