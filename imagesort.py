@@ -105,9 +105,16 @@ def image_copy(images, input_path, output_path):
 
 def image_data(img_input):
     if isinstance(img_input, str):
-        img = PIL_Image.open(img_input)
+        try:
+            img = PIL_Image.open(img_input)
+        except IOError:
+            img = None
+            print "'" + img_input + "' not found or not image"
     else:
         img = img_input
+
+    if img is None:
+        return (None, None)
 
     exif = img._getexif()
 
@@ -145,8 +152,11 @@ def timestamp_to_datetime(t):
 
 def image_time_taken(image_file):
     data = image_data(image_file)
-    t = data[0]
-    return datetime_to_timestamp(t)
+    if data == (None, None):
+        return None
+    else:
+        t = data[0]
+        return datetime_to_timestamp(t)
 
 def image_sort_time_old(images, path="."):
     images.sort(key=lambda x: image_time_taken(join(path, x)))
@@ -156,6 +166,8 @@ def image_partition_old(images, path="."):
     p = {}
     for image in images:
         model = image_data(join(path, image))[1]
+        if model is None:
+            continue
         if model not in p:
             p[model] = []
         p[model].append(image)
@@ -169,6 +181,8 @@ def create_image_wrappers(files):
     images = []
     for f in files:
         data = image_data(join(input_path, f))
+        if data == (None, None): 
+            continue
         img = Image(f, data[0], data[1])
         images.append(img)
     return images
