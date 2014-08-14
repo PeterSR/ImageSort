@@ -213,11 +213,13 @@ if __name__ == '__main__':
     # Create partition by camera model
     p = partition(images)
 
+    # If 'models' was passed, print the models
     if print_models:
         for model in p:
             print model
     else: # Do your actual thing
-        normalize_by_config(p)
+        if config.has_section("normalize"):
+            normalize_by_config(p)
     
         sort_by_time(images)
 
